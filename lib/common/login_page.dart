@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:trade_app/common/widgets/my_button.dart';
@@ -26,10 +27,10 @@ class _LoginPageState extends State<LoginPage> {
       final String aboutUser = nameController.text.substring(0, 2);
       Map<String, String> userMap = {
           'FT' : "user",
-          'AD' : "admin",
-          'BO' : "backofficer",
-          'BI' : "biller",
-          'AP' : "approver"
+          'AD' : "Admin",
+          'BO' : "BackOfficer",
+          'BI' : "Biller",
+          'AP' : "Approver"
 
       };
        pageRoute  = userMap[aboutUser].toString();
@@ -47,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
         };
 
        if(pageRoute == 'user'){
-          _appService.logIn(loginData).then((response)async{
+          _appService.UserlogIn(loginData).then((response)async{
               if(response.statusCode==200){
                   final decodedResponse = jsonDecode(response.body);
                    if (decodedResponse is Map<String, dynamic> && decodedResponse['resp'] is Map) {
@@ -58,25 +59,44 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.pushNamed(context, "/$pageRoute", arguments: UserInfomation);
                    }
               }
-          });
-       }
-       else if(pageRoute == 'admin'){
-          _appService.logIn(loginData).then((response)async{
-
-          });
-       }
-       else if(pageRoute == 'backofficer'){
-          _appService.logIn(loginData).then((response)async{
-
-          });
-       }
-       else if(pageRoute == 'biller'){
-          _appService.logIn(loginData).then((response)async{
-
+              else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Login Failed! Please check your credentials."))
+                );
+              }
+          }).catchError((error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("An error occurred: $error"))
+            );
           });
        }
        else {
-          _appService.logIn(loginData).then((response)async{
+
+          Map<String, dynamic> loginData = {
+              "user_name": nameController.text, 
+              "password": passController.text,
+              "user": pageRoute
+          };
+        // {"resp":{"user_name":"AD0001","password":"1234","user":""},"route":"Admin","flag":true,"status":"S","err":""}
+          _appService.AdminlogIn(loginData).then((response)async{
+              if(response.statusCode==200){
+                  final decodedResponse = jsonDecode(response.body);
+                   if (decodedResponse is Map<String, dynamic> && decodedResponse['resp'] is Map) {
+                      var userMap = decodedResponse['resp'] as Map;
+                      final Map<dynamic, dynamic> UserInfomation = userMap;
+                      print(UserInfomation);
+
+                      Navigator.pushNamed(context, "/$pageRoute", arguments: {'user_Id': nameController.text, 'user': pageRoute});
+                   }
+              }else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Login Failed! Please check your credentials."))
+                );
+              }
+          }).catchError((error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("An error occurred: $error"))
+            );
 
           });
        }

@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-class MyStoks extends StatefulWidget {
-  const MyStoks({super.key});
+class HistoryPage extends StatefulWidget {
+  const HistoryPage({super.key});
 
   @override
-  State<MyStoks> createState() => _MyStoksState();
+  State<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _MyStoksState extends State<MyStoks> {
+class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Stocks'),
+        title: const Text('History'),
       ),
       body: Center(
         child: Text(
-          'No stocks available',
+          'No history available',
           style: TextStyle(fontSize: 20, color: Colors.grey[600]),
         ),
       ),

@@ -45,6 +45,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   void initState() {
     super.initState();
     bankDetails = _appService.getBankDetails();
+    print(bankDetails);
   }
 
   void FormSubmit() async{
