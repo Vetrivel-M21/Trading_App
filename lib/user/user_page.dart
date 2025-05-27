@@ -15,7 +15,7 @@ class _UserPageState extends State<UserPage> {
 
   int _selectedIndex = 0;
   List<Widget> bottomNavPages = [
-    UserHomePage(),
+    UserHomePage( ),
     MyStoks(),
     HistoryPage()
   ];

@@ -14,6 +14,7 @@ class AppService {
   final String insertUserurl = 'http://192.168.2.34:29091/insertUser';
   final String getTradeAprovalurl = 'http://192.168.2.34:29091/getTradeApproval';
   final String userAprovalurl = 'http://192.168.2.34:29091/userApproval';
+  final String getStocksurl = 'http://192.168.2.34:29091/getStocks';
   
   late final Map<String, dynamic> responseData;
   // Function to get bank details
@@ -39,19 +40,31 @@ class AppService {
   }
 
   //register user
-  Future<Map<String, dynamic>> createUser(Map userData) async {
+  Future<Map<String, dynamic>> createUser(Map<String, dynamic> userData) async {
+  print("Calling: $registerUrl");
+  print("Payload: ${jsonEncode(userData)}");
+
+  try {
     final response = await http.post(
       Uri.parse(registerUrl),
       headers: {'Content-Type': 'application/json; charset=UTF-8'},
       body: jsonEncode(userData),
     );
 
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to register user');
+      throw Exception('Failed to register user. Status Code: ${response.statusCode}');
     }
+  } catch (e) {
+    print("Error: $e");
+    throw Exception('Failed to fetch: $e');
   }
+}
+
   
   //user login
   Future<http.Response> UserlogIn(Map loginData) async{
@@ -232,8 +245,28 @@ class AppService {
         throw Exception('Failed to add stock');
       }
   }
+  //get Stocks  
+  Future<List<Map<String, dynamic>>> getStocks() async {
+    final response = await http.get(Uri.parse(getStocksurl));
+
+    if (response.statusCode == 200) {
      
-  
+      var decodedResponse = jsonDecode(response.body);
+
+
+      if (decodedResponse is Map<String, dynamic> && decodedResponse['resp'] is List) {
+        
+        var banksList = decodedResponse['resp'] as List;
+        return List<Map<String, dynamic>>.from(banksList);
+
+      } else {
+        throw Exception('Unexpected response format');
+      }
+    } else {
+      throw Exception('Failed to load bank details');
+    }
+  }
+
 
   
 }

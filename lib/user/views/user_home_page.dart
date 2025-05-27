@@ -8,6 +8,21 @@ class UserHomePage extends StatefulWidget {
 }
 
 class _UserHomePageState extends State<UserHomePage> {
+  late Map<dynamic, dynamic> userInformation;
+
+   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args != null && args is Map<dynamic, dynamic>) {
+      userInformation = args;
+    } else {
+      userInformation = {
+        'first_name': 'Guest',
+        'email': 'guest@example.com'
+      };
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -17,7 +32,7 @@ class _UserHomePageState extends State<UserHomePage> {
           color: Colors.blue,
           child: Center(
             child: Text(
-              "Welcome to User Home Page",
+              "Welcome ${userInformation['first_name']}",
               style: TextStyle(color: Colors.white, fontSize: 24),
             ),
           ),

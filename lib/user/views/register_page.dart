@@ -45,10 +45,10 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   void initState() {
     super.initState();
     bankDetails = _appService.getBankDetails();
-    print(bankDetails);
+    // print(bankDetails);
   }
 
-  void FormSubmit() async{
+  void formSubmit() async{
     if(_formKey.currentState!.validate()){
 
         
@@ -67,14 +67,24 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
           "balance": balanceController.text
         };
 
-        
-    try {
-      var responseData = await _appService.createUser(userInfo);
-      Navigator.pushNamed(context, "/login", arguments: responseData);
-    } catch (e) {
-      // handle error, maybe show Snackbar or dialog
-      print('Registration failed: $e');
-    }  
+        // print("User Info: $userInfo");
+        _appService.createUser(userInfo).then((response) async {
+          if (response['status'] == 'S') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('User registered successfully!')),
+            );
+            // Navigate to the login page or another page
+            Navigator.pushNamed(context, '/login', arguments: response);
+          } else {  
+            ScaffoldMessenger.of(context).showSnackBar( 
+              SnackBar(content: Text('Registration failed: ${response['message']}')),
+            );
+          }
+        }).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error during registration: $error')),
+          );
+        });
 
                 // SharedPreferences preferences = await SharedPreferences.getInstance();
                 // await preferences.setString("client_Id", client_Id);
@@ -260,7 +270,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                       onPressed: (){
                         print(firstNameController.text);
                         if (_formKey.currentState!.validate()) {
-                          FormSubmit();
+                          formSubmit();
                         }
                         
                       },

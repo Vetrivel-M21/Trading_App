@@ -67,7 +67,7 @@ class MyCard extends StatelessWidget {
                       ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     foregroundColor: Colors.white,
-                                    backgroundColor: Colors.blue, // Text color
+                                    backgroundColor: const Color.fromARGB(255, 61, 152, 226), // Text color
                                   ),
                 
                                 onPressed: isAprove, 
@@ -78,7 +78,7 @@ class MyCard extends StatelessWidget {
                       SizedBox(height: 10),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            foregroundColor: const Color.fromARGB(255, 212, 210, 210), backgroundColor: const Color.fromARGB(255, 243, 58, 33), // Text color
+                            foregroundColor: const Color.fromARGB(255, 212, 210, 210), backgroundColor: const Color.fromARGB(255, 253, 85, 63), // Text color
                           ),
                 
                         onPressed: isNotAprove, 

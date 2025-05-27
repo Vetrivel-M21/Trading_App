@@ -76,7 +76,7 @@ class _ClientsApprovalPageState extends State<ClientsApprovalPage> {
               itemBuilder: (context, index) {
                 
                 final client =  clients[index];
-                print(client);
+                // print(client);
                 if (client.isEmpty) {
                   return const SizedBox.shrink(); // Skip approved clients
                 }

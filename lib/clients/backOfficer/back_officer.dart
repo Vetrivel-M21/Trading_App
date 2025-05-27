@@ -20,6 +20,8 @@ class _BackOfficerState extends State<BackOfficer> {
   
   late Map<dynamic, dynamic> userInformation;
   // This method is used to get the user information from the previous page
+    
+
     @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -31,14 +33,24 @@ class _BackOfficerState extends State<BackOfficer> {
         'user': 'Guest',
       };
     }
-    print(userInformation);
+    print("client  $userInformation");
    
-    if(userInformation['user'] == "Approver") {
-      approver = userInformation['user'];
-    } else if(userInformation['user'] != "Approver" && userInformation['user'] != null) {
-      approver = "${userInformation['user']}_Officer";
+    if(userInformation['user'] == "Biller") {
+      approver = "biller_approve";
+    } else if(userInformation['user'] == "BackOfficer" ) {
+      approver = "backOfficer_approve";
+      // print("Approver in method :::::::::::::::::: $approver");
+    }
+    else if(userInformation['user'] == "Approver") {
+      approver = "approver";
+      // print("Approver in method :::::::::::::::::: $approver");
+    }
+    else {
+      approver = "backOfficer_approve";
     }
     clientsData = appService.getTradeAprovel(userInformation['user']);
+    print("Approver in method :::::::::::::::::: $approver");
+    print(" Client :::::: $clientsData");
   }
 
   void approveClient(Map<String, dynamic> client) {
@@ -54,7 +66,7 @@ class _BackOfficerState extends State<BackOfficer> {
         );
         setState(() {
           // Refresh the clients data after approval
-          clientsData = appService.getClientData();
+          clientsData =  appService.getTradeAprovel(userInformation['user']);
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -72,7 +84,7 @@ class _BackOfficerState extends State<BackOfficer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Back Officer Page'),
+        title:  Text('${userInformation['user']} Page'),
       ),
       drawer: Drawer(
         child: ListView(
@@ -83,7 +95,7 @@ class _BackOfficerState extends State<BackOfficer> {
                 color: Colors.blue,
               ),
               child: Text(
-                'Hello, ${userInformation['user_id'] ?? 'User'}',
+                ' ${userInformation['user'] ?? 'User'}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -107,7 +119,7 @@ class _BackOfficerState extends State<BackOfficer> {
           ],
         ),
       ),
-      body:  FutureBuilder<List<Map<String, dynamic>>>(
+      body:  FutureBuilder<List>(
         future: clientsData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -124,17 +136,20 @@ class _BackOfficerState extends State<BackOfficer> {
               itemBuilder: (context, index) {
                 
                 final client =  clients[index];
-                print(client);
+                // print("Future Builder ::::::::::: $client");
+                // print(client['client_id']);
+                // print("Approver :::::::::::::::::: ${client[approver.toString()]} ");
                 if (client.isEmpty) {
                   return const SizedBox.shrink(); // Skip approved clients
                 }
                 else{
 
                 return MyCard(
-                  clientId:client['client_id'],
-                  clientName:" ${client['first_name']}  ${client['last_name']}",
+                  clientId:"${client['client_id']}  ${client['tradeClient']['first_name']}",
+                  clientName:" ${client['tradeStocks']['stock_name']}  quantity: ${client['quantity']}",
                    
                   kycStatus:  client[approver] ,
+
                   isAprove: (){
                     print("isAprove");
                    
