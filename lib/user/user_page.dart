@@ -13,7 +13,20 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   int _selectedIndex = 0;
-  List<Widget> bottomNavPages = [UserHomePage(), MyStoks(), HistoryPage()];
+  String? client_name;
+  List<Map<String, dynamic>> soldStocks = [];
+
+  List<Widget> get bottomNavPages => [
+    UserHomePage(),
+    MyStoks(
+      onSoldStocksChanged: (List<Map<String, dynamic>> updatedSoldStocks) {
+        setState(() {
+          soldStocks = updatedSoldStocks;
+        });
+      },
+    ),
+    HistoryPage(soldStocks: soldStocks),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -31,7 +44,8 @@ class _UserPageState extends State<UserPage> {
     if (args != null && args is Map<dynamic, dynamic>) {
       userInformation = args;
       if (userInformation.containsKey('client_id')) {
-        UserStorage.saveClientId(userInformation['client_id'].toString());
+        UserStorage.saveClientId(userInformation['client_id']);
+        UserStorage.saveClientName(userInformation['first_name']);
       }
     } else {
       userInformation = {'first_name': 'Guest', 'email': 'guest@example.com'};
@@ -42,10 +56,16 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: Text("Trading App"),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(10),
+          child: Container(),
+        ),
         actions: [
           IconButton(
             onPressed: () {
+              UserStorage.clearClientId();
               Navigator.pop(context);
             },
             icon: Icon(Icons.logout),
@@ -56,9 +76,31 @@ class _UserPageState extends State<UserPage> {
         child: ListView(
           children: [
             DrawerHeader(
-              child: UserAccountsDrawerHeader(
-                accountName: Text(userInformation['first_name']),
-                accountEmail: Text(userInformation['email']),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 70, 113, 148),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        userInformation['first_name'],
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                      if (userInformation['kyc_completed'] == true)
+                        Icon(
+                          Icons.check_circle_outline_outlined,
+                          color: Colors.green,
+                        ),
+                    ],
+                  ),
+
+                  Text(userInformation['email']),
+                ],
               ),
             ),
             ListTile(

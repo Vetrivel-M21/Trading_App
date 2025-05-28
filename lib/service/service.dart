@@ -301,6 +301,7 @@ class AppService {
 
     if (response.statusCode == 200) {
       var responseData = jsonDecode(response.body);
+      print(responseData);
       return responseData;
     } else {
       throw Exception("Failed to purchase");

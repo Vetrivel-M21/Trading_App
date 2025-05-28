@@ -106,7 +106,9 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("SignUp"),
+      ),
       backgroundColor: const Color.fromARGB(255, 223, 224, 226),
       body: Center(
         child: Padding(

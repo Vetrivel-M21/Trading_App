@@ -5,20 +5,24 @@ class StockCard extends StatelessWidget {
   final String stockSegment;
   final String stockPrice;
   final VoidCallback buyFunc;
+  final IconData icon;
   const StockCard({
     super.key,
     required this.stockName,
     required this.stockPrice,
     required this.stockSegment,
-    required this.buyFunc
+    required this.buyFunc,
+    required this.icon
   });
 
   @override
   Widget build(BuildContext context) {
+    
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
         elevation: 5,
+        color: const Color.fromARGB(186, 255, 255, 255),
         child: Padding(
           padding: const EdgeInsets.all(18.0),
           child: Row(
@@ -71,7 +75,7 @@ class StockCard extends StatelessWidget {
                         iconSize: 30,
                       ),
                       onPressed: buyFunc,
-                      child: Icon(Icons.shopping_cart_checkout),
+                      child: Icon(icon),
                     ),
                   ],
                 ),

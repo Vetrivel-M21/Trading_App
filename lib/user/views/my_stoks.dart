@@ -5,36 +5,88 @@ import 'package:trade_app/user/widgets/shop_dialog_widget.dart';
 import 'package:trade_app/user/widgets/stock_card.dart';
 
 class MyStoks extends StatefulWidget {
-  const MyStoks({super.key});
+  final Function(List<Map<String, dynamic>>) onSoldStocksChanged;
+  const MyStoks({super.key, required this.onSoldStocksChanged});
 
   @override
   State<MyStoks> createState() => _MyStoksState();
 }
 
 class _MyStoksState extends State<MyStoks> {
+  late Future<List<Map<String, dynamic>>> allStocks;
   late Map<dynamic, dynamic> userInformation;
   AppService appService = AppService();
-  late List<Map<String, dynamic>> stocks;
+  List<Map<String, dynamic>> stocks = [];
+  List<Map<String, dynamic>> soldStocks = [];
+  List<Map<String, dynamic>> AllStocks = [];
   String? clientID;
   int quantity = 0;
 
   @override
   void initState() {
     super.initState();
+    allStocks = appService.getStocks();
+    allStocks.then((stocks) {
+      AllStocks = stocks;
+    });
     getStocksData();
-   
     // print(stocks);
+  }
+
+  void refreshStocks() async {
+    clientID = await UserStorage.getClientId();
+    List<Map<String, dynamic>> allStocks = await appService.getMyTrade(
+      clientID.toString(),
+    );
+
+    List<Map<String, dynamic>> available = [];
+    List<Map<String, dynamic>> sold = [];
+
+    for (var stock in allStocks) {
+      double price = double.parse(stock['trade_price']);
+      if (price == 0) {
+        sold.add(stock);
+      } else {
+        available.add(stock);
+      }
+    }
+
+    setState(() {
+      stocks = available;
+      soldStocks = sold;
+    });
+    widget.onSoldStocksChanged(soldStocks);
   }
 
   void getStocksData() async {
     clientID = await UserStorage.getClientId();
-     stocks = await appService.getMyTrade(clientID.toString());
-     print(stocks); 
-     setState(() {
-     
-       
-     });
-  // If you want to store it as a Future later
+    print("Client ID: $clientID");
+
+    List<Map<String, dynamic>> allStocks = await appService.getMyTrade(
+      clientID.toString(),
+    );
+
+    List<Map<String, dynamic>> available = [];
+    List<Map<String, dynamic>> sold = [];
+
+    for (var stock in allStocks) {
+      double price = double.parse(stock['trade_price']);
+      // print(price);
+      if (price == 0) {
+        sold.add(stock);
+        // print(stock['trade_price']);
+      } else {
+        available.add(stock);
+      }
+    }
+
+    setState(() {
+      stocks = available;
+      soldStocks = sold;
+    });
+    print("Available ::::::::::::::$available");
+    print("SoldStocks ::::::::::::::$sold");
+    widget.onSoldStocksChanged(soldStocks);
   }
 
   @override
@@ -45,7 +97,7 @@ class _MyStoksState extends State<MyStoks> {
       userInformation = args;
     } else {
       userInformation = {
-        'client_id': 'FT00021',
+        // 'client_id': 'FT00021',
         'first_name': 'Guest',
         'email': 'guest@example.com',
       };
@@ -57,45 +109,56 @@ class _MyStoksState extends State<MyStoks> {
     return Scaffold(
       body: ListView(
         children: [
-          Container(
-            height: 200,
-            color: Colors.blue,
-            child: Center(
-              child: Text(
-                "Welcome ${userInformation['first_name']}",
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              ),
-            ),
-          ),
-
+          // Container(
+          //   height: 200,
+          //   color: Colors.blue,
+          //   child: Center(
+          //     child: Text(
+          //       " ${userInformation['first_name']}",
+          //       style: TextStyle(color: Colors.white, fontSize: 24),
+          //     ),
+          //   ),
+          // ),
           SizedBox(height: 10),
 
-          
-          ListView.builder(
+          stocks.isEmpty
+              ? Center(child: Text("No Stack Availbe"))
+              : ListView.builder(
                 shrinkWrap: true, //
                 physics:
                     NeverScrollableScrollPhysics(), // disable nested scrolling
                 itemCount: stocks.length,
                 itemBuilder:
                     (context, index) => StockCard(
-                      stockName: "Trade ID : ${stocks[index]['trade_id']}",
+                       stockName: AllStocks.firstWhere(
+                                    (element) => element['stock_id'] == stocks[index]['stock_id'],
+                                    orElse: () => {'stock_name': 'Unknown'},
+                                    )['stock_name'],
                       stockPrice: stocks[index]["trade_price"],
                       stockSegment: "Stock ID: ${stocks[index]['stock_id']}",
+                      icon: Icons.sell,
                       buyFunc: () {
-                        if (userInformation["kyc_completed"] == true) {
-                          print(stocks[index]["stock_id"]);
+                        if (userInformation["kyc_completed"] == true &&
+                            userInformation['first_name'] != 'Guest') {
+                          // print(userInformation["kyc_completed"]);
                           showDialog(
                             context: context,
                             builder:
                                 (context) => ShopDialog(
-                                  stockName:"Trade ID : ${stocks[index]['trade_id']}",
-                                  stockSegment:" Stock ID: ${stocks[index]['stock_id']} ",
+                                    stockName: AllStocks.firstWhere(
+                                    (element) => element['stock_id'] == stocks[index]['stock_id'],
+                                    orElse: () => {'stock_name': 'Unknown'},
+                                    )['stock_name'],
+                                  stockSegment:
+                                      " Stock ID: ${stocks[index]['stock_id']} ,                          Available quantity : ${stocks[index]['quantity']}",
                                   stockPrice: stocks[index]["trade_price"],
                                   stockId: stocks[index]['stock_id'],
                                   tradeType: "Sell",
                                   clientId: userInformation['client_id'],
                                   kycCompleted:
                                       userInformation['kyc_completed'],
+                                  availQuantity: stocks[index]['quantity'],
+                                  onStockUpdated: refreshStocks,
                                   // stockQuantity: quantity.toString(),
                                   // totalPrice: (quantity * int.parse(stock[index]["stock_price"])).toString(),
                                   // increment: increment,
@@ -114,8 +177,6 @@ class _MyStoksState extends State<MyStoks> {
                       },
                     ),
               ),
-          
-         
         ],
       ),
     );

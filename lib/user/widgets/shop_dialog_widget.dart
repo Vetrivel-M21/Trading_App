@@ -10,6 +10,8 @@ class ShopDialog extends StatefulWidget {
   final String tradeType;
   final int stockId;
   final bool kycCompleted;
+  final int availQuantity;
+  final VoidCallback onStockUpdated;
 
   const ShopDialog({
     super.key,
@@ -20,6 +22,8 @@ class ShopDialog extends StatefulWidget {
     required this.tradeType,
     required this.stockId,
     required this.kycCompleted,
+    required this.availQuantity,
+    required this.onStockUpdated
   });
 
   @override
@@ -51,10 +55,18 @@ class _ShopDialogState extends State<ShopDialog> {
             if (response['status'] == 'S') {
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(SnackBar(content: Text(response['resp'])));
+              ).showSnackBar(SnackBar(
+                content: Text(response['resp']),
+                backgroundColor: Colors.green,
+              ));
+              widget.onStockUpdated(); 
+              // Navigator.pop(context);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Stock boughted Successfully")),
+                SnackBar(
+                  content: Text(response['resp']),
+                  backgroundColor: Colors.red,
+                ),
               );
             }
             Navigator.pop(context);
@@ -64,6 +76,8 @@ class _ShopDialogState extends State<ShopDialog> {
               context,
             ).showSnackBar(SnackBar(content: Text("Erorr:::$error")));
           });
+
+          
       // Navigator.pop(context);
     }
   }
@@ -108,7 +122,13 @@ class _ShopDialogState extends State<ShopDialog> {
                     ),
                     Text("$quantity"),
                     IconButton(
-                      onPressed: () => setState(() => quantity++),
+                      onPressed:
+                          () => setState(
+                            () =>
+                                quantity < widget.availQuantity
+                                    ? quantity++
+                                    : quantity,
+                          ),
                       icon: Icon(Icons.add, color: Colors.greenAccent),
                     ),
                   ],
@@ -120,10 +140,10 @@ class _ShopDialogState extends State<ShopDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Total: ₹$totalPrice",
+                  "Total: ₹${totalPrice.toStringAsFixed(2)}",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                ElevatedButton(onPressed: buySell, child: Text("Buy")),
+                ElevatedButton(onPressed: buySell, child: Text(widget.tradeType)),
               ],
             ),
           ],

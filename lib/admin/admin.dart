@@ -29,9 +29,12 @@ class _AdminPageState extends State<AdminPage> {
   final TextEditingController userRollController = TextEditingController();
   final TextEditingController statusController = TextEditingController();
 
-  final TextEditingController brokeragechargeTypeController = TextEditingController();
-  final TextEditingController brokerageeffectiveDateController = TextEditingController();
-  final TextEditingController brokerageChargeController = TextEditingController();
+  final TextEditingController brokeragechargeTypeController =
+      TextEditingController();
+  final TextEditingController brokerageeffectiveDateController =
+      TextEditingController();
+  final TextEditingController brokerageChargeController =
+      TextEditingController();
 
   final List<String> userRolls = ["Back Office", "Biller", "Approver"];
   final List<String> userStatus = ["Active", "Inactive"];
@@ -45,45 +48,46 @@ class _AdminPageState extends State<AdminPage> {
       print(value);
     });
   }
-  
 
   late Map<dynamic, dynamic> userInformation;
   // This method is used to get the user information from the previous page
-    @override
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args != null && args is Map<dynamic, dynamic>) {
       userInformation = args;
     } else {
-      userInformation = {
-        'user_name': 'Guest',
-      };
+      userInformation = {'user_name': 'Guest'};
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> addUserFormKey = GlobalKey<FormState>();
     AppService appService = AppService();
-   
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Page') ,
+        title: const Text('Admin Page'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.logout),
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
+              decoration: BoxDecoration(color: Colors.blue),
               child: Text(
                 userInformation['user_name'] ?? 'Admin',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+                style: const TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
             ListTile(
@@ -92,7 +96,6 @@ class _AdminPageState extends State<AdminPage> {
               onTap: () {
                 // Navigator.pushNamed(context, '/Adminprofile', arguments: userInformation);
               },
-
             ),
             ListTile(
               leading: Icon(Icons.logout),
@@ -100,7 +103,6 @@ class _AdminPageState extends State<AdminPage> {
               onTap: () {
                 Navigator.pushNamed(context, '/login');
               },
-             
             ),
           ],
         ),
@@ -113,106 +115,108 @@ class _AdminPageState extends State<AdminPage> {
             Container(
               height: 200,
               decoration: BoxDecoration(
-                           color: Colors.blue,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: Offset(0, 3), // changes position of shadow
-                              ),
-                            ],
-               ),
-              
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey,
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3), // changes position of shadow
+                  ),
+                ],
+              ),
+
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children:[
-                     Column(children: [
-                          Text(
-                            "Welcome to Admin Page",
-                            style: TextStyle(color: Colors.white, fontSize: 24),
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "Manage Users, Stocks",
-                            style: TextStyle(color: Colors.white70, fontSize: 16),
-                          ),
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          "Welcome to Admin Page",
+                          style: TextStyle(color: Colors.white, fontSize: 24),
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          "Manage Users, Stocks",
+                          style: TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
                       ],
                     ),
                     SizedBox(height: 20),
-
-                   
-                    
                   ],
-                  //add Stocks , add users, add banks, cliend Approval,
-                  
-                ),
-                ) ,
-              ),
-              SizedBox(height: 10,),
 
-               Row(
-                   mainAxisAlignment: MainAxisAlignment.center,
+                  //add Stocks , add users, add banks, cliend Approval,
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  flex: 5,
+                  fit: FlexFit.tight,
+                  child: Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                       Flexible(
-                        flex: 5,
-                        fit: FlexFit.tight,
-                        child: Container(
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: Offset(0, 3), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          child:Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(child: Text("Add Banks")),
-                              SizedBox(height: 10,),
-                              ElevatedButton(
-                                
-                                onPressed: (){
-                                  showDialog(context: context, builder: (context)=>MyDialuge(
+                        Center(child: Text("Add Banks")),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder:
+                                  (context) => MyDialuge(
                                     lable1: "Bank Name",
                                     lable2: "Branch Name",
                                     lable3: "IFSC Code",
                                     lable4: "Address",
                                     lable1Controller: bankNameController,
-                                    lable2Controller: branchNameController ,
+                                    lable2Controller: branchNameController,
                                     lable3Controller: ifscCodeController,
                                     lable4Controller: addressController,
                                     lable1Validator: (value) {
-                                      if(value == null || value.isEmpty){
+                                      if (value == null || value.isEmpty) {
                                         return "Please enter Bank Name";
                                       }
                                       return null;
                                     },
                                     lable2Validator: (value) {
-                                      if(value == null || value.isEmpty){
+                                      if (value == null || value.isEmpty) {
                                         return "Please enter Branch Name";
                                       }
                                       return null;
                                     },
-                                    lable3Validator:  (value) {
-                                      if(value == null || value.isEmpty){
+                                    lable3Validator: (value) {
+                                      if (value == null || value.isEmpty) {
                                         return "Please enter IFSC Code";
-                                      }
-                                      else if (RegExp("^[A-Z]{4}0[A-Z0-9]{6}\$").hasMatch(value) == false) {
+                                      } else if (RegExp(
+                                            "^[A-Z]{4}0[A-Z0-9]{6}\$",
+                                          ).hasMatch(value) ==
+                                          false) {
                                         return "Please enter a valid IFSC code";
                                       }
                                       return null;
                                     },
                                     lable4Validator: (value) {
-                                      if(value == null || value.isEmpty){
+                                      if (value == null || value.isEmpty) {
                                         return "Please enter the Address";
                                       }
                                       return null;
@@ -220,68 +224,89 @@ class _AdminPageState extends State<AdminPage> {
                                     onSubmit: () {
                                       Map<String, dynamic> bankData = {
                                         'bank_name': bankNameController.text,
-                                        'branch_name': branchNameController.text,
+                                        'branch_name':
+                                            branchNameController.text,
                                         'ifsc_code': ifscCodeController.text,
                                         'address': addressController.text,
                                       };
 
-                                      appService.insertBank(bankData).then((value) {
-                                        if(value) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('Bank added successfully')),
-                                          );
-                                          bankNameController.clear();
-                                          branchNameController.clear();
-                                          ifscCodeController.clear();
-                                          addressController.clear();
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('Failed to add bank')),
-                                          );
-                                        }
-                                      }).catchError((error) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Error: $error')),
-                                        );
-                                      });
-                                      
+                                      appService
+                                          .insertBank(bankData)
+                                          .then((value) {
+                                            if (value) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Bank added successfully',
+                                                  ),
+                                                ),
+                                              );
+                                              bankNameController.clear();
+                                              branchNameController.clear();
+                                              ifscCodeController.clear();
+                                              addressController.clear();
+                                            } else {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Failed to add bank',
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          })
+                                          .catchError((error) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Error: $error'),
+                                              ),
+                                            );
+                                          });
                                     },
-                                  ));
-                                }, 
-                                child: Text("Add Bank"),
-                              ),
-                            ],
-                          ),
+                                  ),
+                            );
+                          },
+                          child: Text("Add Bank"),
                         ),
-
-                       ),
-                       SizedBox(width: 10,),
-                      Flexible(
-                        flex: 5,
-                        fit: FlexFit.tight,
-                        child:Container(
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: Offset(0, 3), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(child: Text("Add Stocks")),
-                              SizedBox(height: 10,),
-                              ElevatedButton(
-                                
-                                onPressed: (){
-                                   showDialog(context: context, builder: (context)=>MyDialuge(
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Flexible(
+                  flex: 5,
+                  fit: FlexFit.tight,
+                  child: Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(child: Text("Add Stocks")),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder:
+                                  (context) => MyDialuge(
                                     lable1: "Stock Name",
                                     lable2: "Stock Price",
                                     lable3: "Segment",
@@ -291,28 +316,30 @@ class _AdminPageState extends State<AdminPage> {
                                     lable3Controller: segmentController,
                                     lable4Controller: isinController,
                                     lable1Validator: (value) {
-                                      if(value == null || value.isEmpty){
+                                      if (value == null || value.isEmpty) {
                                         return "Please enter Stock Name";
                                       }
                                       return null;
                                     },
-                                    lable2Validator:  (value) {
-                                      if(value == null || value.isEmpty){
+                                    lable2Validator: (value) {
+                                      if (value == null || value.isEmpty) {
                                         return "Please enter Stock Price";
-                                      }
-                                      else if (RegExp("^[0-9]").hasMatch(value) == false) {
+                                      } else if (RegExp(
+                                            "^[0-9]",
+                                          ).hasMatch(value) ==
+                                          false) {
                                         return "Please enter a valid Stock Price";
                                       }
                                       return null;
                                     },
                                     lable3Validator: (value) {
-                                      if(value == null || value.isEmpty){
+                                      if (value == null || value.isEmpty) {
                                         return "Please enter Segment";
                                       }
                                       return null;
                                     },
                                     lable4Validator: (value) {
-                                      if(value == null || value.isEmpty){
+                                      if (value == null || value.isEmpty) {
                                         return "Please enter the ISIN";
                                       }
                                       return null;
@@ -320,45 +347,65 @@ class _AdminPageState extends State<AdminPage> {
                                     onSubmit: () {
                                       Map<String, dynamic> stockData = {
                                         'stock_name': stockNameController.text,
-                                        'stock_price': int.parse(stockPriceController.text),
+                                        'stock_price': int.parse(
+                                          stockPriceController.text,
+                                        ),
                                         'segment': segmentController.text,
                                         'isin': isinController.text,
                                       };
 
-                                      appService.addStocks(stockData).then((value) {
-                                        if(value) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('Stock added successfully')),
-                                          );
-                                          stockNameController.clear();
-                                          stockPriceController.clear();
-                                          segmentController.clear();
-                                          isinController.clear();
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('Failed to add stock')),
-                                          );
-                                        }
-                                      }).catchError((error) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Error: $error')),
-                                        );
-                                      });
-                                      
+                                      appService
+                                          .addStocks(stockData)
+                                          .then((value) {
+                                            if (value) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Stock added successfully',
+                                                  ),
+                                                ),
+                                              );
+                                              stockNameController.clear();
+                                              stockPriceController.clear();
+                                              segmentController.clear();
+                                              isinController.clear();
+                                            } else {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Failed to add stock',
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          })
+                                          .catchError((error) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Error: $error'),
+                                              ),
+                                            );
+                                          });
                                     },
-                                  ));
-                                }, 
-                                child: Text("Add Stocks")
-                              ),
-                            ],
-                          ),
+                                  ),
+                            );
+                          },
+                          child: Text("Add Stocks"),
                         ),
-
-                       ),
                       ],
                     ),
+                  ),
+                ),
+              ],
+            ),
 
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
 
             Container(
               height: 100,
@@ -383,23 +430,23 @@ class _AdminPageState extends State<AdminPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Center(child: Text("Client Approval")),
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10),
                         ElevatedButton(
-                          onPressed: (){
+                          onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const ClientsApprovalPage(),
-                              ) 
+                                builder:
+                                    (context) => const ClientsApprovalPage(),
+                              ),
                             );
-                          }, 
+                          },
                           child: Text("Approve Clients"),
                         ),
                       ],
                     ),
                   ),
-                 
-                  
+
                   Flexible(
                     flex: 5,
                     fit: FlexFit.tight,
@@ -407,47 +454,49 @@ class _AdminPageState extends State<AdminPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Center(child: Text("Add Brokarage")),
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10),
                         ElevatedButton(
-                          onPressed: (){
+                          onPressed: () {
                             showDialog(
-                              context: context, 
-                              builder: (context) =>
-                              AlertDialog(
-                                title: Text("Add Brokarage"),
-                                content: Form(
-                                  child: Column(
-                                    children: [
-                                        MyTextFeild(
-                                            controller:brokeragechargeTypeController ,
+                              context: context,
+                              builder:
+                                  (context) => AlertDialog(
+                                    title: Text("Add Brokarage"),
+                                    content: Form(
+                                      child: Column(
+                                        children: [
+                                          MyTextFeild(
+                                            controller:
+                                                brokeragechargeTypeController,
                                             lable: "Brokerage Charge Type",
                                             readOnly: false,
                                             validator: (value) {
-                                              if(value == null || value.isEmpty){
+                                              if (value == null ||
+                                                  value.isEmpty) {
                                                 return "Please enter Brokerage Charge Type";
                                               }
                                               return null;
                                             },
-                                        ),
-                                        MyTextFeild(
-                                            controller:brokeragechargeTypeController ,
+                                          ),
+                                          MyTextFeild(
+                                            controller:
+                                                brokeragechargeTypeController,
                                             lable: "",
                                             readOnly: false,
                                             validator: (value) {
-                                              if(value == null || value.isEmpty){
+                                              if (value == null ||
+                                                  value.isEmpty) {
                                                 return "Please enter Brokerage Charge Type";
                                               }
                                               return null;
                                             },
-                                        ),
-
-                                        
-                                    ],
-                                  )
-                                ),
-                              )
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                             );
-                          }, 
+                          },
                           child: Text("Add Brokarage"),
                         ),
                       ],
@@ -456,7 +505,7 @@ class _AdminPageState extends State<AdminPage> {
                 ],
               ),
             ),
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
 
             Container(
               height: 100,
@@ -477,161 +526,196 @@ class _AdminPageState extends State<AdminPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Center(child: Text("Add Users")),
-                  SizedBox(height: 10,),
+                  SizedBox(height: 10),
                   ElevatedButton(
-                    onPressed: (){
-                     
-                       showDialog(
-                        context: context, 
-                        builder: (context)=> AlertDialog(
-                          title: Text("Add User"),
-                          content: StatefulBuilder(
-                            builder: (context, setState) =>
-                             Form(
-                              key: addUserFormKey,
-                               child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  MyTextFeild(
-                                    controller: userNameController, 
-                                    lable: "User Name", 
-                                    readOnly: false,
-                                    validator: (value){
-                                      if(value == null || value.isEmpty){
-                                        return "Please enter User Name";
-                                      }
-                                      return null;
-                                    },
-                                                           
-                                  ),
-                                  MyTextFeild(
-                                    controller: userPasswordController, 
-                                    lable: "User Password", 
-                                    readOnly: false,
-                                    validator: (value){
-                                      if(value == null || value.isEmpty){
-                                        return "Please enter User Password";
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                 DropdownButton<String>(
-                                    value: selectedUserRoll,
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        selectedUserRoll = newValue!;
-                                      });
-                                    },
-                                    items: userRolls.map<DropdownMenuItem<String>>((String role) {
-                                      return DropdownMenuItem<String>(
-                                        value: role,
-                                        child: Text(role),
-                                      );
-                                    }).toList(),
-                                    isExpanded: true,
-                                    hint: Text("Select User Role"),
-                                    underline: Container(
-                                      height: 1,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                               
-                                   DropdownButton<String>(
-                                    value: selectedUserStatus,
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        selectedUserStatus = newValue!;
-                                      });
-                                    },
-                                    items: userStatus.map<DropdownMenuItem<String>>((String status) {
-                                      return DropdownMenuItem<String>(
-                                        value: status,
-                                        child: Text(status),
-                                      );
-                                    }).toList(),
-                                    isExpanded: true,
-                                    hint: Text("Select User Role"),
-                                    underline: Container(
-                                      height: 1,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                               
-                               ),
-                             ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // Close the dialog
-                              },
-                              child: const Text('Cancel'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                if(addUserFormKey.currentState!.validate()) {
-                                  // Handle the form submission
-                                  // You can add the user to your database or perform any other action
-                                  // print("User Name: ${userNameController.text}");
-                                  // print("User Password: ${userPasswordController.text}");
-                                  // print("User Role: $selectedUserRoll");
-                                  // print("User Status: $selectedUserStatus");
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: Text("Add User"),
+                              content: StatefulBuilder(
+                                builder:
+                                    (context, setState) => Form(
+                                      key: addUserFormKey,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          MyTextFeild(
+                                            controller: userNameController,
+                                            lable: "User Name",
+                                            readOnly: false,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return "Please enter User Name";
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          MyTextFeild(
+                                            controller: userPasswordController,
+                                            lable: "User Password",
+                                            readOnly: false,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return "Please enter User Password";
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          DropdownButton<String>(
+                                            value: selectedUserRoll,
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                selectedUserRoll = newValue!;
+                                              });
+                                            },
+                                            items:
+                                                userRolls.map<
+                                                  DropdownMenuItem<String>
+                                                >((String role) {
+                                                  return DropdownMenuItem<
+                                                    String
+                                                  >(
+                                                    value: role,
+                                                    child: Text(role),
+                                                  );
+                                                }).toList(),
+                                            isExpanded: true,
+                                            hint: Text("Select User Role"),
+                                            underline: Container(
+                                              height: 1,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
 
-                                  Map<String, dynamic> userData = {
-                                    "user_name": userNameController.text,
-                                    "password":userPasswordController.text ,
-                                    "role": selectedUserRoll, 
-                                    "status": selectedUserStatus
-                                  };
+                                          DropdownButton<String>(
+                                            value: selectedUserStatus,
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                selectedUserStatus = newValue!;
+                                              });
+                                            },
+                                            items:
+                                                userStatus.map<
+                                                  DropdownMenuItem<String>
+                                                >((String status) {
+                                                  return DropdownMenuItem<
+                                                    String
+                                                  >(
+                                                    value: status,
+                                                    child: Text(status),
+                                                  );
+                                                }).toList(),
+                                            isExpanded: true,
+                                            hint: Text("Select User Role"),
+                                            underline: Container(
+                                              height: 1,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pop(); // Close the dialog
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (addUserFormKey.currentState!
+                                        .validate()) {
+                                      // Handle the form submission
+                                      // You can add the user to your database or perform any other action
+                                      // print("User Name: ${userNameController.text}");
+                                      // print("User Password: ${userPasswordController.text}");
+                                      // print("User Role: $selectedUserRoll");
+                                      // print("User Status: $selectedUserStatus");
 
-                                  appService.insertUser(userData).then((value) {
-                                    if(value) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('User added successfully')),
-                                        
-                                      );
-                                      userNameController.clear();
-                                      userPasswordController.clear();
-                                      userRollController.clear();
-                                      statusController.clear();
-                                      Navigator.of(context).pop();
+                                      Map<String, dynamic> userData = {
+                                        "user_name": userNameController.text,
+                                        "password": userPasswordController.text,
+                                        "role": selectedUserRoll,
+                                        "status": selectedUserStatus,
+                                      };
+
+                                      appService
+                                          .insertUser(userData)
+                                          .then((value) {
+                                            if (value) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'User added successfully',
+                                                  ),
+                                                ),
+                                              );
+                                              userNameController.clear();
+                                              userPasswordController.clear();
+                                              userRollController.clear();
+                                              statusController.clear();
+                                              Navigator.of(context).pop();
+                                            } else {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Failed to add user',
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          })
+                                          .catchError((error) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Error: $error'),
+                                              ),
+                                            );
+                                          });
+
+                                      // Navigator.of(context).pop();
                                     } else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Failed to add user')),
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Please fill all fields correctly',
+                                          ),
+                                        ),
                                       );
                                     }
-                                  }).catchError((error) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error: $error')),
-                                    );
-                                  });
-                                  
-                                  // Navigator.of(context).pop();
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Please fill all fields correctly')),
-                                  );
-                                }
-                              
-                                
-                                // Navigator.of(context).pop();
-                              },
-                              child: const Text('Submit'),
+
+                                    // Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Submit'),
+                                ),
+                              ],
                             ),
-                          ],
-                        )
                       );
-                    }, 
+                    },
                     child: Text("Add Users"),
                   ),
                 ],
               ),
             ),
-            
           ],
         ),
-      )
+      ),
     );
   }
 }
