@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:trade_app/service/service.dart';
 import 'package:trade_app/service/user_storage.dart';
@@ -12,18 +14,57 @@ class UserHomePage extends StatefulWidget {
 }
 
 class _UserHomePageState extends State<UserHomePage> {
-  late Map<dynamic, dynamic> userInformation;
+  // late Map<dynamic, dynamic> userInformation;
   AppService appService = AppService();
+  bool isUserDataLoaded = false;
+
   late Future<List<Map<String, dynamic>>> stocks;
+  late Map<dynamic, dynamic> userData;
   String? client_name;
   int quantity = 0;
 
   @override
   void initState() {
     super.initState();
+    getUserData();
 
     stocks = appService.getStocks();
+
     // setName();
+  }
+
+  void getUserData() async {
+    String? client_id = await UserStorage.getClientId();
+    String? client_pass = await UserStorage.getClientPass();
+    Map<String, dynamic> loginData = {
+      'client_id': client_id.toString(),
+      'password': client_pass.toString(),
+    };
+
+    appService.UserlogIn(loginData)
+        .then((response) async {
+          if (jsonDecode(response.body)['status'] == 'S') {
+            final decodedResponse = jsonDecode(response.body);
+            if (decodedResponse is Map<String, dynamic> &&
+                decodedResponse['resp'] is Map) {
+              var userMap = decodedResponse['resp'] as Map;
+              setState(() {
+                userData = userMap;
+                isUserDataLoaded = true;
+              });
+              // print(UserInfomation);
+            }
+          } else {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("Data losed")));
+          }
+        })
+        .catchError((error) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("An error occurred: $error")));
+        });
   }
 
   void refreshStocks() {
@@ -34,12 +75,12 @@ class _UserHomePageState extends State<UserHomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args = ModalRoute.of(context)?.settings.arguments;
-    if (args != null && args is Map<dynamic, dynamic>) {
-      userInformation = args;
-    } else {
-      userInformation = {'first_name': 'Guest', 'email': 'guest@example.com'};
-    }
+    // final args = ModalRoute.of(context)?.settings.arguments;
+    // if (args != null && args is Map<dynamic, dynamic>) {
+    //   userInformation = args;
+    // } else {
+    //   userInformation = {'first_name': 'Guest', 'email': 'guest@example.com'};
+    // }
   }
 
   // void setName() async {
@@ -65,8 +106,6 @@ class _UserHomePageState extends State<UserHomePage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      
-
       child: Container(
         margin: EdgeInsets.only(top: 10),
         decoration: BoxDecoration(
@@ -105,8 +144,16 @@ class _UserHomePageState extends State<UserHomePage> {
                           icon: Icons.shopping_cart,
                           buyFunc: () {
                             // if (userInformation["kyc_completed"] == true) {
+                            if (!isUserDataLoaded) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("User data not loaded yet"),
+                                ),
+                              );
+                              return;
+                            }
                             print(stock[index]["stock_id"]);
-                            if (userInformation['kyc_completed'] == true) {
+                            if (userData['kyc_completed'] == true) {
                               showDialog(
                                 context: context,
                                 builder:
@@ -116,9 +163,8 @@ class _UserHomePageState extends State<UserHomePage> {
                                       stockPrice: stock[index]["stock_price"],
                                       stockId: stock[index]['stock_id'],
                                       tradeType: "Buy",
-                                      clientId: userInformation['client_id'],
-                                      kycCompleted:
-                                          userInformation['kyc_completed'],
+                                      clientId: userData['client_id'],
+                                      kycCompleted: userData['kyc_completed'],
                                       availQuantity: 100,
                                       onStockUpdated: refreshStocks,
                                       // stockQuantity: quantity.toString(),

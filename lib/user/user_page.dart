@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:trade_app/service/service.dart';
 import 'package:trade_app/service/user_storage.dart';
 import 'package:trade_app/user/views/history.dart';
 import 'package:trade_app/user/views/my_stoks.dart';
@@ -15,6 +18,8 @@ class _UserPageState extends State<UserPage> {
   int _selectedIndex = 0;
   String? client_name;
   List<Map<String, dynamic>> soldStocks = [];
+  Map<dynamic, dynamic>? userData;
+  AppService appService = AppService();
 
   List<Widget> get bottomNavPages => [
     UserHomePage(),
@@ -34,23 +39,61 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
-  late Map<dynamic, dynamic> userInformation;
+  // late Map<dynamic, dynamic> userInformation;
 
-  // This method is used to get the user information from the previous page
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final args = ModalRoute.of(context)?.settings.arguments;
-    if (args != null && args is Map<dynamic, dynamic>) {
-      userInformation = args;
-      if (userInformation.containsKey('client_id')) {
-        UserStorage.saveClientId(userInformation['client_id']);
-        UserStorage.saveClientName(userInformation['first_name']);
-      }
-    } else {
-      userInformation = {'first_name': 'Guest', 'email': 'guest@example.com'};
-    }
+  // get appService => null;
+
+  void getUserData() async {
+    String? client_id = await UserStorage.getClientId();
+    print(client_id);
+    String? client_pass = await UserStorage.getClientPass();
+    print(client_pass);
+    Map<String, dynamic> loginData = {
+      'client_id': client_id,
+      'password': client_pass,
+    };
+    print(loginData);
+
+    appService.UserlogIn(loginData)
+        .then((response) async {
+          if (jsonDecode(response.body)['status'] == 'S') {
+            print("hi::::::::::::::");
+            final decodedResponse = jsonDecode(response.body);
+            if (decodedResponse is Map<String, dynamic> &&
+                decodedResponse['resp'] is Map) {
+              var userMap = decodedResponse['resp'] as Map;
+              // print(userMap);
+              setState(() {
+                
+              });
+              userData = userMap;
+              print(userData);
+              // print(UserInfomation);
+            }
+          } else {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("Data losed")));
+          }
+        })
+        .catchError((error) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("An error occurred: $error")));
+        });
   }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  // @override
+  // void didUpdateWidget(covariant UserPage oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   if(userData== null) getUserData();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +109,7 @@ class _UserPageState extends State<UserPage> {
           IconButton(
             onPressed: () {
               UserStorage.clearClientId();
+              UserStorage.clearClientPass();
               Navigator.pop(context);
             },
             icon: Icon(Icons.logout),
@@ -79,35 +123,44 @@ class _UserPageState extends State<UserPage> {
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 70, 113, 148),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        userInformation['first_name'],
-                        style: TextStyle(color: Colors.white, fontSize: 20),
+              child:
+                  userData == null
+                      ? Center(child: CircularProgressIndicator())
+                      : Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 40),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                userData!['first_name'] ?? '',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              if (userData!['kyc_completed'] == true)
+                                Icon(
+                                  Icons.check_circle_outline_outlined,
+                                  color: Colors.green,
+                                ),
+                            ],
+                          ),
+                          Text(userData!['email'] ?? ''),
+                        ],
                       ),
-                      if (userInformation['kyc_completed'] == true)
-                        Icon(
-                          Icons.check_circle_outline_outlined,
-                          color: Colors.green,
-                        ),
-                    ],
-                  ),
-
-                  Text(userInformation['email']),
-                ],
-              ),
             ),
             ListTile(
               title: Text("Profile"),
               leading: Icon(Icons.home),
               onTap: () {
-                Navigator.pushNamed(context, "/profile");
+                Navigator.pushNamed(
+                  context,
+                  "/profile",
+                  // arguments: userInformation,
+                );
               },
             ),
 

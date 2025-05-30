@@ -17,46 +17,66 @@ class _BackOfficerState extends State<BackOfficer> {
   late String approver;
   String? userName;
 
-  late Map<dynamic, dynamic> userInformation;
+  // late Map<dynamic, dynamic> userInformation;
   // This method is used to get the user information from the previous page
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final args = ModalRoute.of(context)?.settings.arguments;
-    if (args != null && args is Map<dynamic, dynamic>) {
-      userInformation = args;
-    } else {
-      userInformation = {'user': 'Guest'};
-    }
-    print("client  $userInformation");
+  void initState() {
+    super.initState();
 
-    if (userInformation['user'] == "Biller") {
+    initData();
+    // getUserName();
+    // clientsData = appService.getTradeAprovel(userName!);
+    // Removed print statement to avoid printing null before userName is set
+  }
+
+  // void getUserName() async {
+  //   var instance = await UserStorage.getUserName();
+  //   setState(() {
+  //     userName = instance.toString();
+  //     print("username ::::::$userName");
+  //     // For debugging, print userName after it is set (remove in production)
+  //   });
+  // }
+
+  Future<void> initData() async {
+    final instance = await UserStorage.getUserName();
+    setState(() {
+      userName = instance.toString();
+    });
+
+    // final args = ModalRoute.of(context)?.settings.arguments;
+    // if (args != null && args is Map<dynamic, dynamic>) {
+    //   userInformation = args;
+    // } else {
+    //   userInformation = {'user': 'Guest'};
+    // }
+
+    // Set approver based on userName
+    if (userName == "Biller") {
       approver = "biller_approve";
-    } else if (userInformation['user'] == "BackOfficer") {
+    } else if (userName == "BackOfficer") {
       approver = "backOfficer_approve";
-      // print("Approver in method :::::::::::::::::: $approver");
-    } else if (userInformation['user'] == "Approver") {
+    } else if (userName == "Approver") {
       approver = "approver";
-      // print("Approver in method :::::::::::::::::: $approver");
     } else {
-      approver = "backOfficer_approve";
+      approver = "";
     }
-    clientsData = appService.getTradeAprovel(userInformation['user']);
-    print("Approver in method :::::::::::::::::: $approver");
-    print(" Client :::::: $clientsData");
-    getUserName();
+
+    // Now it's safe to fetch clientsData
+    setState(() {
+      clientsData = appService.getTradeAprovel(userName!);
+    });
   }
 
-  void getUserName() async {
-    await UserStorage.saveUserName(userInformation['user']);
-    userName = await UserStorage.getUserName();
-    print("UserName ::::::$userName");
-  }
+  // void getUserName() async {
+  //   await UserStorage.saveUserName(userInformation['user']);
+  //   userName = await UserStorage.getUserName();
+  //   print("UserName ::::::$userName");
+  // }
 
   void approveClient(Map<String, dynamic> client) {
     Map<String, dynamic> userAprovalData = {
-      "user": "${userInformation['user']}",
+      "user": userName,
       "trade_id": client["trade_id"],
       "approval": "Approved",
     };
@@ -73,7 +93,7 @@ class _BackOfficerState extends State<BackOfficer> {
             );
             setState(() {
               // Refresh the clients data after approval
-              clientsData = appService.getTradeAprovel(userInformation['user']);
+              clientsData = appService.getTradeAprovel(userName!);
             });
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -96,10 +116,11 @@ class _BackOfficerState extends State<BackOfficer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${userInformation['user']} Page'),
+        title: Text('$userName Page'),
         actions: [
           IconButton(
             onPressed: () {
+              UserStorage.clearUserName();
               Navigator.pop(context);
             },
             icon: Icon(Icons.logout),
@@ -113,7 +134,7 @@ class _BackOfficerState extends State<BackOfficer> {
             DrawerHeader(
               decoration: BoxDecoration(color: Colors.blue),
               child: Text(
-                ' ${userInformation['user'] ?? 'User'}',
+                ' ${userName ?? 'User'}',
                 style: const TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
@@ -161,14 +182,24 @@ class _BackOfficerState extends State<BackOfficer> {
                     clientName:
                         " ${client['tradeStocks']['stock_name']}  quantity: ${client['quantity']}",
 
-                    kycStatus: client[approver],
+                    kycStatus: " ${client[approver]} ",
 
                     isAprove: () {
                       print("isAprove");
 
                       approveClient(client);
                     },
-                    isNotAprove: () {},
+                    isNotAprove: () {
+                      setState(() {
+                        clientsData = Future.value(
+                          Future.value(
+                            List<Map<String, dynamic>>.from(
+                              snapshot.data!.removeAt(index),
+                            ),
+                          ),
+                        );
+                      });
+                    },
                   );
                 }
               },

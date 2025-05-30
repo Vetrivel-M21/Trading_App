@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class UserStorage {
   static const String clientIdKey = 'client_id';
-  static const String clientNameKey = 'client_name';
+  static const String clientPassKey = 'client_pass';
   static const String userNameKey = 'user_name';
 
   static Future<void> saveClientId(String clientData) async {
@@ -20,19 +20,19 @@ class UserStorage {
     await prefs.remove(clientIdKey);
   }
 
-  static Future<void> saveClientName(String clientData) async {
+  static Future<void> saveClientPass(String clientData) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(clientNameKey, clientData.toString());
+    await prefs.setString(clientPassKey, clientData.toString());
   }
 
-  static Future<String?> getClientName() async {
+  static Future<String?> getClientPass() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(clientNameKey);
+    return prefs.getString(clientPassKey);
   }
 
-  static Future<void> clearClientName() async {
+  static Future<void> clearClientPass() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(clientNameKey);
+    await prefs.remove(clientPassKey);
   }
    static Future<void> saveUserName(String clientData) async {
     final prefs = await SharedPreferences.getInstance();

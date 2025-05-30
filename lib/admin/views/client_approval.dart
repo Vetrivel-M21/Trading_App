@@ -92,7 +92,11 @@ class _ClientsApprovalPageState extends State<ClientsApprovalPage> {
                     approveClient(client);
                   },
                   isNotAprove:(){
-
+                        setState(() {
+                          clientsData = Future.value(
+                            (snapshot.data!..removeAt(index)) ?? [],
+                          );
+                        });
                   }
                   
                 );
